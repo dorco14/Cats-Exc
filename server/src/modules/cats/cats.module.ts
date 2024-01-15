@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { CatsService } from './cats.service';
-import { DatabaseModule } from 'src/database/database.module';
 import { CatsController } from './cats.controller';
-import { catsProviders } from './cats.providers';
+import { Cat } from '../../models/cat/cat.model';
 
 @Module({
-    imports: [DatabaseModule],
+    imports: [MikroOrmModule.forFeature([Cat])],
     controllers: [CatsController],
-    providers: [CatsService , ...catsProviders],
+    providers: [CatsService],
 })
 export class CatsModule { }

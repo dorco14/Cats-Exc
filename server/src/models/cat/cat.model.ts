@@ -1,28 +1,51 @@
-import { Table, Model, Column, DataType, PrimaryKey, AutoIncrement, HasMany } from 'sequelize-typescript';
-import { Mouse } from '../mouse/mouse.model';
+import { Entity, PrimaryKey, Property, OneToMany } from "@mikro-orm/core";
+import { Mouse } from "../mouse/mouse.model";
 
-@Table({
-  tableName: 'cats'
-})
-    
-export class Cat extends Model<Cat> {
-  @PrimaryKey
-  @AutoIncrement
-  @Column(DataType.INTEGER)
-  id: number;
+@Entity()
+export class Cat {
+  @PrimaryKey()
+  id!: number;
 
-  @Column(DataType.STRING)
-  firstName: string;
+  @Property()
+  firstName!: string;
 
-  @Column(DataType.STRING)
-  lastName: string;
+  @Property()
+  lastName!: string;
 
-  @Column(DataType.STRING)
-  image: string;
+  @Property()
+  image!: string;
 
-  @Column(DataType.STRING)
-  description: string;
+  @Property()
+  description!: string;
 
-  @HasMany(() => Mouse)
-  mice: Mouse[];
+  @OneToMany(() => Mouse, 'cat')
+  mice = new Array<Mouse>();
+
+  @Property()
+  createdAt = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt = new Date();
 }
+
+// export class Cat extends Model<Cat> {
+//   @PrimaryKey
+//   @AutoIncrement
+//   @Column(DataType.INTEGER)
+//   id: number;
+
+//   @Column(DataType.STRING)
+//   firstName: string;
+
+//   @Column(DataType.STRING)
+//   lastName: string;
+
+//   @Column(DataType.STRING)
+//   image: string;
+
+//   @Column(DataType.STRING)
+//   description: string;
+
+//   @HasMany(() => Mouse)
+//   mice: Mouse[];
+// }
