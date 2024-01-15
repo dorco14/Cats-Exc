@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { databaseProviders } from './database.provider';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { dbConfig } from './database.config';
 
 @Module({
-  providers: [...databaseProviders],
-  exports: [...databaseProviders],
+  imports: [MikroOrmModule.forRoot(dbConfig)],
 })
-export class DatabaseModule {}
+export class DatabaseModule { }

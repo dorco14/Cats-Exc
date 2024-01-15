@@ -1,21 +1,17 @@
-import { Column, Table, DataType, ForeignKey, BelongsTo } from "sequelize-typescript";
+import { Entity, PrimaryKey, Property, ManyToOne } from "@mikro-orm/core";
 import { Cat } from "../cat/cat.model";
-import { BaseModel } from "../base.model";
 
-@Table({
-    tableName: "mice"
-})
-export class Mouse extends BaseModel<Mouse> {
-    @Column(DataType.STRING)
-    name: string;
+@Entity()
+export class Mouse {
+    @PrimaryKey()
+    id!: number;
 
-    @ForeignKey(() => Cat)
-    @Column({
-        type: DataType.UUID,
-        allowNull: false,
-    })
-    catId: string;
+    @Property()
+    name!: string;
 
-    @BelongsTo(() => Cat)
-    cat: Cat;
+    @Property()
+    catId!: number;
+
+    @ManyToOne(() => Cat)
+    cat!: Cat;
 }
