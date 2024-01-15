@@ -2,6 +2,7 @@ import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Cat } from 'src/models/cat/cat.model';
 import { Mouse } from 'src/models/mouse/mouse.model';
 import { CreateCatDto } from 'src/types/dto/cat.dto';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class CatsService {
@@ -11,11 +12,25 @@ export class CatsService {
   ) { }
 
   async create(createCatDto: CreateCatDto): Promise<Cat> {
+
     return this.catsRepository.create(createCatDto);
   }
 
-  async findAll(): Promise<Cat[]> {
-    return this.catsRepository.findAll({ include: [{ model: Mouse, as: 'mice' }] });
+  async findAll(filter: string): Promise<Cat[]> {
+    const whereCondition = filter
+      ? {
+        [Op.or]: [
+          { firstName: { [Op.iLike]: `%${filter}%` } },
+          { lastName: { [Op.iLike]: `%${filter}%` } },
+          { '$mice.name$': { [Op.iLike]: `%${filter}%` } },
+        ],
+      }
+      : {};
+
+    return this.catsRepository.findAll({
+      where: whereCondition,
+      include: [{ model: Mouse, as: 'mice' }]
+    });
   }
 
   async findOne(id: number): Promise<Cat> {
@@ -28,4 +43,3 @@ export class CatsService {
     return cat;
   }
 }
-

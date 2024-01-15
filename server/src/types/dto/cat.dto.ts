@@ -1,6 +1,6 @@
 export class CreateCatDto {
-    readonly firstName: string;
-    readonly lastName: string;
-    readonly image: string;
-    readonly description: string;
-  }
+  readonly firstName: string;
+  readonly lastName: string;
+  readonly image: string;
+  readonly description: string;
+}

@@ -1,15 +1,11 @@
-import { Table, Model, Column, DataType, PrimaryKey, AutoIncrement, HasMany } from 'sequelize-typescript';
+import { Table, Column, DataType, HasMany } from 'sequelize-typescript';
+import { BaseModel } from '../base.model';
 import { Mouse } from '../mouse/mouse.model';
 
 @Table({
   tableName: 'cats'
 })
-    
-export class Cat extends Model<Cat> {
-  @PrimaryKey
-  @AutoIncrement
-  @Column(DataType.INTEGER)
-  id: number;
+export class Cat extends BaseModel<Cat> {
 
   @Column(DataType.STRING)
   firstName: string;

@@ -3,7 +3,7 @@ import { useStyles } from "./style";
 
 type TFilterInputProps = {
     placeholder: string;
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const FilterInput: FunctionComponent<TFilterInputProps> = ({ placeholder, onChange }) => {

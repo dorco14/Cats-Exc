@@ -1,14 +1,15 @@
 import axios, { Axios } from 'axios';
 import { TCat } from '../../types/cat';
 
-const catAxios : Axios = axios.create({
-    baseURL: 'http://localhost:4000/',
+const catAxios: Axios = axios.create({
+    baseURL: 'http://localhost:4000/cats',
 });
 
-export const getCats = async (): Promise<TCat[]> => {
+export const getCats = async (filter?: string): Promise<TCat[]> => {
     try {
-        const { data } = await catAxios.get('/cats');
+        const { data } = await catAxios.get('', { params: { name: filter } });
         return data;
+
     } catch (error) {
         console.error('Error fetching cats:', error);
         throw error;
@@ -17,7 +18,7 @@ export const getCats = async (): Promise<TCat[]> => {
 
 export const createCat = async (cat: TCat): Promise<void> => {
     try {
-        await catAxios.post('/cats', cat);
+        await catAxios.post('', cat);
     } catch (error) {
         console.error('Error creating cat:', error);
         throw error;

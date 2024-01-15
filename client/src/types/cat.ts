@@ -1,7 +1,8 @@
+import { UUID } from "crypto";
 import { TMouse } from "./mouse";
 
 export type TCat = {
-    id?: number;
+    id?: UUID;
     firstName: string;
     lastName: string;
     image: string;

@@ -6,11 +6,11 @@ import constate from "constate";
 const useCatsContext = () => {
     const [cats, setCats] = useState<TCat[]>([]);
 
-    const fetchCats = useCallback(async () => {
+    const fetchCats = useCallback(async (filter?: string) => {
         try {
-            const cats = await getCats();
-            setCats(cats);
-            return cats;
+            const filteredCats = await getCats(filter);
+            setCats(filteredCats);
+            return filteredCats;
         } catch (error) {
             console.log(error);
         }

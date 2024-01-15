@@ -1,4 +1,4 @@
 export class CreateMouseDto {
     readonly name: string;
-    readonly catId: number;
+    readonly catId: string;
   }

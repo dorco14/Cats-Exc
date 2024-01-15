@@ -6,7 +6,7 @@ import { FilterInput } from '../common/components/FilterInput';
 import { NavLink } from 'react-router-dom';
 import { Button } from '../common/components/Button';
 import type { TCat } from '../../types/cat';
-import type { TMouse } from '../../types/mouse';
+import debounce from 'lodash.debounce';
 
 const PLACE_HOLDER_TEXT: string = 'Search for a cat or mouse';
 const NO_CATS_FOUND: string = 'No Cats Found';
@@ -18,9 +18,20 @@ export const CatList = () => {
   const [filterData, setFilterData] = useState<TCat[]>([]);
   const [loading, setLoading] = useState<Boolean>(true);
 
-  const getCats = useCallback(async (): Promise<void> => {
+  const debouncedGetCats = useCallback(
+    debounce((filter) => {
+      getCats(filter);
+    }, 1000),
+    []
+  );
+
+  const handleFilter = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    debouncedGetCats(e.target.value);
+  }, []);
+
+  const getCats = useCallback(async (filter?: string): Promise<void> => {
     try {
-      const cats = await store.actions.fetchCats();
+      const cats = await store.actions.fetchCats(filter);
       setFilterData(cats || []);
       setLoading(false);
     } catch (error) {
@@ -28,17 +39,6 @@ export const CatList = () => {
       setLoading(false);
     }
   }, []);
-
-  const filterCats = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
-    const filteredData = store.state.cats.filter((cat: TCat) => {
-      let catName: string = `${cat.firstName.toLowerCase()} ${cat.lastName.toLowerCase()}`;
-      let miceName: string = cat.mice.map((mouse: TMouse) => mouse.name.toLowerCase()).join(' ');
-      if (catName.includes(event.target.value.toLowerCase()) || miceName.includes(event.target.value.toLowerCase())) {
-        return true;
-      }
-    })
-    setFilterData(filteredData);
-  }, [filterData]);
 
   useEffect(() => {
     getCats();
@@ -50,7 +50,7 @@ export const CatList = () => {
         <div className={styles.spinner}></div>
       </div>) :
         (<div>
-          <FilterInput placeholder={PLACE_HOLDER_TEXT} onChange={filterCats} />
+          <FilterInput placeholder={PLACE_HOLDER_TEXT} onChange={handleFilter} />
           <div className={styles.cardContainer}>
             {
               filterData.length > 0 ?
