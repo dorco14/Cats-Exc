@@ -3,53 +3,33 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Cat } from 'src/models/cat/cat.model';
 import { CreateCatDto } from 'src/types/dto/cat.dto';
-import { Op } from 'sequelize';
+import { Mouse } from 'src/models/mouse/mouse.model';
 
-// @Injectable()
-// export class CatsService {
-//   constructor(
-//     @Inject('CATS_REPOSITORY')
-//     private catsRepository: typeof Cat
-//   ) { }
-
-//   async create(createCatDto: CreateCatDto): Promise<Cat> {
-
-//     return this.catsRepository.create(createCatDto);
-//   }
-
-//   async findAll(filter: string): Promise<Cat[]> {
-//     const whereCondition = filter
-//       ? {
-//         [Op.or]: [
-//           { firstName: { [Op.iLike]: `%${filter}%` } },
-//           { lastName: { [Op.iLike]: `%${filter}%` } },
-//           { '$mice.name$': { [Op.iLike]: `%${filter}%` } },
-//         ],
-//       }
-//       : {};
-
-//     return this.catsRepository.findAll({
-//       where: whereCondition,
-//       include: [{ model: Mouse, as: 'mice' }]
-//     });
-
+@Injectable()
 export class CatsService {
   constructor(@InjectRepository(Cat) private catRepository: EntityRepository<Cat>) { }
 
-  async findAll(): Promise<Cat[]> {
-    return this.catRepository.findAll({ populate: ['mice'] });
-  }
+  async findAll(filter?: string): Promise<Cat[]> {
+    if (filter) {
+      return await this.catRepository.find({
+        $or: [
+          { firstName: { $ilike: `%${filter}%` } },
+          { lastName: { $ilike: `%${filter}%` } },
+          { mice: { $in: await this.catRepository.createQueryBuilder().select('*').from(Mouse).where({ name: { $ilike: `%${filter}%` } }) } }
+        ]
+      }, { populate: ['mice'] });
+    };
 
-  async findOne(id: number): Promise<Cat> {
-    const cat = await this.catRepository.findOne(id, { populate: ['mice'] });
-    if (!cat) {
-      throw new NotFoundException(`Cat with id ${id} not found`);
-    }
-    return cat;
-  }
+    return await this.catRepository.findAll({ populate: ['mice'] });
+  };
 
   async create(createCatDto: CreateCatDto): Promise<Cat> {
     const cat = this.catRepository.create(createCatDto);
-    return cat;
+    try {
+      await this.catRepository.insert(cat);
+      return cat
+    } catch (error) {
+      throw new Error('Failed to insert cat');
+    }
   }
 }

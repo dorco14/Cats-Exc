@@ -1,15 +1,15 @@
-import { Model, Column, DataType, PrimaryKey, Default, IsUUID } from 'sequelize-typescript';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { v4 as uuidv4 } from 'uuid';
 
-export class BaseModel<T> extends Model<T> {
-    @PrimaryKey
-    @Default(DataType.UUIDV4)
-    @IsUUID(4)
-    @Column(DataType.UUID)
-    id: string;
+@Entity()
+export abstract class BaseModel {
 
-    @Column(DataType.DATE)
-    createdAt: Date;
+  @PrimaryKey({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
+  id: string = uuidv4();
 
-    @Column(DataType.DATE)
-    updatedAt: Date;
+  @Property({ type: 'date' })
+  createdAt: Date = new Date();
+
+  @Property({ type: 'date', onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
 }
