@@ -5,9 +5,9 @@ const catAxios: Axios = axios.create({
     baseURL: 'http://localhost:4000/cats',
 });
 
-export const getCats = async (filter?: string): Promise<TCat[]> => {
+export const getCats = async (filter?: string, signal?: AbortSignal): Promise<TCat[]> => {
     try {
-        const { data } = await catAxios.get('', { params: { name: filter } });
+        const { data } = await catAxios.get('', { signal, params: { name: filter } });
         return data;
 
     } catch (error) {

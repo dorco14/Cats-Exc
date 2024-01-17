@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useCallback, useState } from 'react';
+import { Fragment, useEffect, useCallback, useState, useRef } from 'react';
 import { useCats } from '../../contexts/cats.context';
 import { useStyles } from './style';
 import { Cat } from './components/Cat';
@@ -7,6 +7,7 @@ import { NavLink } from 'react-router-dom';
 import { Button } from '../common/components/Button';
 import type { TCat } from '../../types/cat';
 import debounce from 'lodash.debounce';
+import axios from 'axios';
 
 const PLACE_HOLDER_TEXT: string = 'Search for a cat or mouse';
 const NO_CATS_FOUND: string = 'No Cats Found';
@@ -17,27 +18,41 @@ export const CatList = () => {
   const styles = useStyles();
   const [filterData, setFilterData] = useState<TCat[]>([]);
   const [loading, setLoading] = useState<Boolean>(true);
-
-  const debouncedGetCats = useCallback(
-    debounce((filter) => {
-      getCats(filter);
-    }, 1000),
-    []
-  );
-
-  const handleFilter = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    debouncedGetCats(e.target.value);
-  }, []);
+  const filterRef = useRef<string>('');
+  const abortController = useRef<AbortController>(new AbortController());
 
   const getCats = useCallback(async (filter?: string): Promise<void> => {
     try {
-      const cats = await store.actions.fetchCats(filter);
+      const signal = abortController.current.signal;
+      const cats = await store.actions.fetchCats(filter, signal);
+
       setFilterData(cats || []);
       setLoading(false);
+
     } catch (error) {
+      if (!axios.isCancel(error)) {
+        console.log(error);
+      }
       console.log(error);
       setLoading(false);
     }
+  }, []);
+
+  const debouncedGetCats = useCallback(
+    debounce((filter) => {
+      if (filter !== filterRef.current) {
+        abortController.current.abort();
+        abortController.current = new AbortController();
+        filterRef.current = filter;
+        getCats(filter);
+      }
+
+    }, 300),
+    []
+  );
+
+  const handleFilter = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    debouncedGetCats(event.target.value);
   }, []);
 
   useEffect(() => {

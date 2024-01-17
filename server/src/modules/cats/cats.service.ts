@@ -2,7 +2,7 @@ import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Cat } from 'src/models/cat/cat.model';
 import { Mouse } from 'src/models/mouse/mouse.model';
 import { CreateCatDto } from 'src/types/dto/cat.dto';
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 
 @Injectable()
 export class CatsService {
@@ -17,20 +17,23 @@ export class CatsService {
   }
 
   async findAll(filter: string): Promise<Cat[]> {
-    const whereCondition = filter
-      ? {
+    if (filter) {
+      const mouseSubQuery = Sequelize.literal(`(SELECT "m"."catId" FROM "mice" as "m" where "m"."name" ILIKE '%${filter}%')`)
+      const whereCondition = {
         [Op.or]: [
           { firstName: { [Op.iLike]: `%${filter}%` } },
           { lastName: { [Op.iLike]: `%${filter}%` } },
-          { '$mice.name$': { [Op.iLike]: `%${filter}%` } },
+          { id: { [Op.in]: mouseSubQuery } },
         ],
       }
-      : {};
+      return this.catsRepository.findAll({
+        where: whereCondition,
+        include: [{ model: Mouse, as: 'mice' }]
+      });
+    }
 
-    return this.catsRepository.findAll({
-      where: whereCondition,
-      include: [{ model: Mouse, as: 'mice' }]
-    });
+    return this.catsRepository.findAll({ include: [{ model: Mouse, as: 'mice' }] });
+
   }
 
   async findOne(id: number): Promise<Cat> {
