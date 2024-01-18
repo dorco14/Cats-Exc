@@ -1,4 +1,4 @@
-import { Cat } from "src/models/cat/cat.model";
+import type { Cat } from "src/models/cat/cat.model";
 
 export class CreateMouseDto {
   readonly name: string;

@@ -20,7 +20,7 @@ export class CatsService {
       }, { populate: ['mice'] });
     };
 
-    return await this.catRepository.findAll({ populate: ['mice'] });
+    return this.catRepository.findAll({ populate: ['mice'] });
   };
 
   async create(createCatDto: CreateCatDto): Promise<Cat> {
