@@ -11,7 +11,7 @@ export class CatsService {
 
   async findAll(filter?: string): Promise<Cat[]> {
     if (filter) {
-      return await this.catRepository.find({
+      return this.catRepository.find({
         $or: [
           { firstName: { $ilike: `%${filter}%` } },
           { lastName: { $ilike: `%${filter}%` } },
