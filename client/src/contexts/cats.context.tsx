@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
+import constate from "constate";
 import type { TCat } from "../types/cat";
 import { getCats, createCat } from "../services/cats/cat.service";
-import constate from "constate";
 
 const useCatsContext = () => {
     const [cats, setCats] = useState<TCat[]>([]);

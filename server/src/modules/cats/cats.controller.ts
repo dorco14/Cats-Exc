@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { CatsService } from './cats.service';
-import { Cat } from 'src/models/cat/cat.model';
+import type { Cat } from 'src/models/cat/cat.model';
+import { CreateCatDto } from 'src/types/dto/cat.dto';
 
 @Controller('cats')
 export class CatsController {
@@ -8,16 +9,29 @@ export class CatsController {
 
     @Get()
     async findAll(@Query('name') name?: string): Promise<Cat[]> {
-        return this.catService.findAll(name);
+        try {
+            return this.catService.findAll(name);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     @Get(':id')
     async findOne(@Param('id') id: number): Promise<Cat> {
-        return this.catService.findOne(id);
+        try {
+            return this.catService.findOne(id);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     @Post()
-    async create(@Body() catData: Cat): Promise<Cat> {
-        return this.catService.create(catData);
+    async create(@Body() catData: CreateCatDto): Promise<Cat> {
+        console.log(typeof (catData.description))
+        try {
+            return this.catService.create(catData);
+        } catch (error) {
+            console.log(error);
+        }
     }
 }

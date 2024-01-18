@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { useStyles } from './style';
 import { useCats } from "../../contexts/cats.context";
 import { Button } from "../common/components/Button";
-import { useNavigate } from "react-router-dom";
 
 const ADD_CAT_TEXT = 'Add Cat';
 const DESCRIPTION_TEXT = 'Description';
@@ -11,10 +11,10 @@ const LAST_NAME_TEXT = 'Last Name';
 const FIRST_NAME_TEXT = 'First Name';
 
 export const AddCat = () => {
-    const [firstName, setFirstName] = useState<string>('');
-    const [lastName, setLastName] = useState<string>('');
-    const [image, setImage] = useState<string>('');
-    const [description, setDescription] = useState<string>('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [image, setImage] = useState('');
+    const [description, setDescription] = useState('');
     const navigate = useNavigate();
 
     const styles = useStyles();
@@ -36,7 +36,7 @@ export const AddCat = () => {
         setDescription(event.target.value);
     }, []);
 
-    const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const newCat = {
             firstName: firstName,
@@ -45,7 +45,7 @@ export const AddCat = () => {
             description: description,
             mice: []
         }
-        store.actions.addCat(newCat);
+        await store.actions.addCat(newCat);
         navigate('/');
     }, [firstName, lastName, image, description]);
 
@@ -55,7 +55,6 @@ export const AddCat = () => {
                 {FIRST_NAME_TEXT}
                 <input className={styles.formInput} type="text" value={firstName} onChange={handleFirstNameChange} required />
             </label>
-            <br />
             <label className={styles.formLabel}>
                 {LAST_NAME_TEXT}
                 <input className={styles.formInput} type="text" value={lastName} onChange={handleLastNameChange} required />
@@ -65,13 +64,11 @@ export const AddCat = () => {
                 {IMAGE_TEXT}
                 <input className={styles.formInput} type="text" value={image} onChange={handleImageChange} required />
             </label>
-            <br />
             <label className={styles.formLabel}>
                 {DESCRIPTION_TEXT}
                 <input className={styles.formInput} type="text" value={description} onChange={handleDescriptionChange} required />
             </label>
-            <br />
-            <Button type={'submit'} text={ADD_CAT_TEXT}/>
+            <Button type={'submit'} text={ADD_CAT_TEXT} />
         </form>
     );
 };

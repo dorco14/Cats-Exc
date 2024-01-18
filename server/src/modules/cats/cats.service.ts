@@ -1,8 +1,8 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Op, Sequelize } from 'sequelize';
 import { Cat } from 'src/models/cat/cat.model';
 import { Mouse } from 'src/models/mouse/mouse.model';
 import { CreateCatDto } from 'src/types/dto/cat.dto';
-import { Op, Sequelize } from 'sequelize';
 
 @Injectable()
 export class CatsService {

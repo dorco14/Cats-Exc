@@ -1,5 +1,5 @@
-import { UUID } from "crypto";
-import { TMouse } from "./mouse";
+import type { UUID } from "crypto";
+import type { TMouse } from "./mouse";
 
 export type TCat = {
     id?: UUID;

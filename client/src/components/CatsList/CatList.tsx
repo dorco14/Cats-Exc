@@ -1,25 +1,26 @@
 import { Fragment, useEffect, useCallback, useState, useRef } from 'react';
-import { useCats } from '../../contexts/cats.context';
-import { useStyles } from './style';
-import { Cat } from './components/Cat';
-import { FilterInput } from '../common/components/FilterInput';
 import { NavLink } from 'react-router-dom';
+import debounce from 'lodash.debounce';
+import { Cat } from './components/Cat';
+import axios from 'axios';
+import { useStyles } from './style';
+import { useCats } from '../../contexts/cats.context';
+import { FilterInput } from '../common/components/FilterInput';
 import { Button } from '../common/components/Button';
 import type { TCat } from '../../types/cat';
-import debounce from 'lodash.debounce';
-import axios from 'axios';
 
-const PLACE_HOLDER_TEXT: string = 'Search for a cat or mouse';
-const NO_CATS_FOUND: string = 'No Cats Found';
-const ADD_CAT_TEXT: string = 'Add Cat';
+const PLACE_HOLDER_TEXT = 'Search for a cat or mouse';
+const NO_CATS_FOUND = 'No Cats Found';
+const ADD_CAT_TEXT = 'Add Cat';
+const DEBOUNCE_TIME = 300;
 
 export const CatList = () => {
   const store = useCats();
   const styles = useStyles();
   const [filterData, setFilterData] = useState<TCat[]>([]);
-  const [loading, setLoading] = useState<Boolean>(true);
-  const filterRef = useRef<string>('');
-  const abortController = useRef<AbortController>(new AbortController());
+  const [loading, setLoading] = useState(true);
+  const filterRef = useRef('');
+  const abortController = useRef(new AbortController());
 
   const getCats = useCallback(async (filter?: string): Promise<void> => {
     try {
@@ -30,9 +31,6 @@ export const CatList = () => {
       setLoading(false);
 
     } catch (error) {
-      if (!axios.isCancel(error)) {
-        console.log(error);
-      }
       console.log(error);
       setLoading(false);
     }
@@ -47,7 +45,7 @@ export const CatList = () => {
         getCats(filter);
       }
 
-    }, 300),
+    }, DEBOUNCE_TIME),
     []
   );
 
@@ -70,9 +68,7 @@ export const CatList = () => {
             {
               filterData.length > 0 ?
                 filterData.map((cat) => (
-                  <Fragment key={cat.id}>
-                    <Cat cat={cat} />
-                  </Fragment>
+                  <Cat cat={cat} key={cat.id} />
                 )) : <div className={styles.errorText}>{NO_CATS_FOUND}</div>
             }
           </div>

@@ -1,5 +1,5 @@
 import axios, { Axios } from 'axios';
-import { TCat } from '../../types/cat';
+import type { TCat } from '../../types/cat';
 
 const catAxios: Axios = axios.create({
     baseURL: 'http://localhost:4000/cats',

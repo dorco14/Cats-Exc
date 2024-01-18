@@ -1,6 +1,6 @@
 import { FunctionComponent, Fragment } from "react";
-import type { TCat } from "../../../../types/cat";
 import { useStyles } from "./style";
+import type { TCat } from "../../../../types/cat";
 
 type TCatProps = {
   cat: TCat;

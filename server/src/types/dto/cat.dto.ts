@@ -1,6 +1,15 @@
+import { IsString, IsNotEmpty } from 'class-validator';
+
 export class CreateCatDto {
-  readonly firstName: string;
-  readonly lastName: string;
-  readonly image: string;
-  readonly description: string;
+  @IsString()
+   firstName: string;
+
+  @IsString()
+   lastName: string;
+
+  @IsString()
+   image: string;
+  
+  @IsString()
+   description: string;
 }
